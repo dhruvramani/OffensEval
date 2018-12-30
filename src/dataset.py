@@ -31,11 +31,12 @@ def init_glove(glove_path=_GLOVE_PATH): # Run only first time
 class OffenseEval(Dataset):
     """OffenseEval dataset."""
 
-    def __init__(self, path, glove_path=_GLOVE_PATH):
+    def __init__(self, path, glove_path=_GLOVE_PATH, task='A'):
         self.path = path
         self.glove_path = glove_path
         self.leng = sum(1 for line in open(self.path)) 
         self.glove = self.load_glove()
+        self.task = task
 
     def load_glove(self):
         vectors = bcolz.open('{}/27B.50.dat'.format(self.glove_path))[:]
@@ -61,7 +62,7 @@ class OffenseEval(Dataset):
         line = linecache.getline(self.path, idx + 1)[:-1]
         contents = line.split("\t")
         contents = self.map_index(contents)
-        return contents
+        return contents['embedding'], contents['SUB{}'.format(self.task)]
 
 if __name__ == '__main__':
     dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/train-v1/offenseval-training-v1.tsv')
