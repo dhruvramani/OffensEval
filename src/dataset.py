@@ -1,4 +1,4 @@
-import bcloz
+import bcolz
 import torch
 import linecache
 import numpy as np 
