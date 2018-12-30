@@ -47,10 +47,10 @@ class OffenseEval(Dataset):
     def map_index(self, contentstr):
         SUBA, SUBB, SUBC= ['NULL', 'NOT', 'OFF'], ['NULL', 'TIN', 'UNT'], ['NULL', 'IND', 'GRP', 'OTH']
         contents = {}
-        contents['instance'] = contentstr[0]
-        contents['SUBA'] = SUBA.index(contentstr[1])
-        contents['SUBB'] = SUBB.index(contentstr[2])
-        contents['SUBC'] = SUBC.index(contentstr[3])
+        contents['instance'] = contentstr[1]
+        contents['SUBA'] = SUBA.index(contentstr[2])
+        contents['SUBB'] = SUBB.index(contentstr[3])
+        contents['SUBC'] = SUBC.index(contentstr[4])
         contents['embeddings'] = np.asarray([self.glove[word] for word in  contents["instance"].split(" ")[1:]])
 
         return contents
@@ -61,7 +61,6 @@ class OffenseEval(Dataset):
     def __getitem__(self, idx):
         line = linecache.getline(self.path, idx + 1)[:-1]
         contents = line.split("\t")
-        print(contents)
         contents = self.map_index(contents)
         return contents
 
