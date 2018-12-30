@@ -3,7 +3,7 @@ import torch
 import pickle
 import linecache
 import numpy as np 
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 
 _GLOVE_PATH = '/home/nevronas/word_embeddings/glove_twitter'
 
@@ -60,8 +60,13 @@ class OffenseEval(Dataset):
     def __getitem__(self, idx):
         line = linecache.getline(self.path, idx + 1)[:-1]
         contents = line.split("\t")
-        contents = map_index(contents)
+        contents = self.map_index(contents)
         return contents
 
 if __name__ == '__main__':
-    init_glove()
+    dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/train-v1/offenseval-training-v1.tsv')
+    dataloader = DataLoader(dataset, batch_size=10, shuffle=True)
+    dataloader = iter(dataloader)
+    for i in range(0, len(dataloader)):
+        contents = next(dataloader)
+        print(contents)
