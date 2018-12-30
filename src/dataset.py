@@ -62,7 +62,8 @@ class OffenseEval(Dataset):
         line = linecache.getline(self.path, idx + 1)[:-1]
         contents = line.split("\t")
         contents = self.map_index(contents)
-        return contents['embedding'], contents['SUB{}'.format(self.task)]
+        print(contents['embeddings'].shape, contents['SUBA'])
+        return contents['embeddings'], contents['SUB{}'.format(self.task)]
 
 if __name__ == '__main__':
     dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/train-v1/offenseval-training-v1.tsv')
