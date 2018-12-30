@@ -51,8 +51,7 @@ class OffenseEval(Dataset):
         contents['SUBA'] = SUBA.index(contentstr[2])
         contents['SUBB'] = SUBB.index(contentstr[3])
         contents['SUBC'] = SUBC.index(contentstr[4])
-        contents['embeddings'] = np.asarray([self.glove[word] for word in  contents["instance"].split(" ")[1:]])
-
+        contents['embeddings'] = np.asarray([self.glove.get(word, self.glove['unk']) for word in  contents["instance"].split(" ")[1:]])
         return contents
 
     def __len__(self):
@@ -70,4 +69,4 @@ if __name__ == '__main__':
     dataloader = iter(dataloader)
     for i in range(0, len(dataloader)):
         contents = next(dataloader)
-        print(contents)
+        print(contents["embeddings"], contents['SUBA'])
