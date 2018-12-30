@@ -10,8 +10,7 @@ def init_glove(glove_path=_GLOVE_PATH): # Run only first time
     words = []
     idx = 0
     word2idx = {}
-    vectors = bcolz.carray(np.zeros(1), rootdir='{}/6B.50.dat'.format(glove_path), mode='w') # TODO : Install bcloz
-
+    vectors = bcolz.carray(np.zeros(1), rootdir='{}/27B.50.dat'.format(glove_path), mode='w')
     with open('{}/glove.twitter.27B.50d.txt'.format(glove_path), 'rb') as f:
         for l in f:
             line = l.decode().split()
@@ -22,10 +21,10 @@ def init_glove(glove_path=_GLOVE_PATH): # Run only first time
             vect = np.array(line[1:]).astype(np.float)
             vectors.append(vect)
 
-    vectors = bcolz.carray(vectors[1:].reshape((400000, 50)), rootdir='{}/6B.50.dat'.format(glove_path), mode='w')
+    vectors = bcolz.carray(vectors.reshape((1193514, 50)), rootdir='{}/27B.50.dat'.format(glove_path), mode='w')
     vectors.flush()
-    pickle.dump(words, open('{}/6B.50_words.pkl'.format(glove_path), 'wb'))
-    pickle.dump(word2idx, open('{}/6B.50_idx.pkl'.format(glove_path), 'wb'))
+    pickle.dump(words, open('{}/27B.50_words.pkl'.format(glove_path), 'wb'))
+    pickle.dump(word2idx, open('{}/27B.50_idx.pkl'.format(glove_path), 'wb'))
     return idx
 
 class OffenseEval(Dataset):
@@ -38,9 +37,9 @@ class OffenseEval(Dataset):
         self.glove = self.load_glove()
 
     def load_glove(self):
-        vectors = bcolz.open('{}/6B.50.dat'.format(self.glove_path))[:]
-        words = pickle.load(open('{}/6B.50_words.pkl'.format(self.glove_path), 'rb'))
-        word2idx = pickle.load(open('{}/6B.50_idx.pkl'.format(self.glove_path), 'rb'))
+        vectors = bcolz.open('{}/27B.50.dat'.format(self.glove_path))[:]
+        words = pickle.load(open('{}/27B.50_words.pkl'.format(self.glove_path), 'rb'))
+        word2idx = pickle.load(open('{}/27B.50_idx.pkl'.format(self.glove_path), 'rb'))
 
         return {w: vectors[word2idx[w]] for w in words}
 
