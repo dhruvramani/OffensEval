@@ -1,5 +1,6 @@
 import bcolz
 import torch
+import pickle
 import linecache
 import numpy as np 
 from torch.utils.data import Dataset
