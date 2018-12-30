@@ -46,6 +46,7 @@ class OffenseEval(Dataset):
 
     def map_index(self, contentstr):
         SUBA, SUBB, SUBC= ['NULL', 'NOT', 'OFF'], ['NULL', 'TIN', 'UNT'], ['NULL', 'IND', 'GRP', 'OTH']
+        contents = {}
         contents['instance'] = contentstr[0]
         contents['SUBA'] = SUBA.index(contentstr[1])
         contents['SUBB'] = SUBB.index(contentstr[2])
