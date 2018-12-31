@@ -62,7 +62,6 @@ class OffenseEval(Dataset):
         line = linecache.getline(self.path, idx + 1)[:-1]
         contents = line.split("\t")
         contents = self.map_index(contents)
-        print(contents['embeddings'].shape, contents['SUBA'])
         return contents['embeddings'], contents['SUB{}'.format(self.task)]
 
 if __name__ == '__main__':
