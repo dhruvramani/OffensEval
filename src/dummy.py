@@ -6,6 +6,7 @@ with open(path, "r") as f:
     for line in f:
         contents = line.split("\t")
         l = len(contents[1].split(" ")[1:])
+        print(l)
         if(l > maxi):
             maxi = l
-print(maxi)
+print("\n",maxi)
