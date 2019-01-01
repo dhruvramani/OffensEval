@@ -54,7 +54,7 @@ class OffenseEval(Dataset):
         contents['SUBA'] = SUBA.index(contentstr[2])
         contents['SUBB'] = SUBB.index(contentstr[3])
         contents['SUBC'] = SUBC.index(contentstr[4])
-        contents['embeddings'] = np.asarray([self.glove.get(word, self.glove['unk']) for word in  contents["instance"].split(" ")[1:]])
+        contents['embeddings'] = np.asarray([self.glove.get(word, self.glove['unk']) for word in  contents["instance"].split(" "))
         # TODO:  concatenate end of line word embedding, then :
         concat = np.zeros((_MAX_LEN - contents["embeddings"].shape[0], _EMB_DIM))
         contents["embeddings"] = np.concatenate((contents["embeddings"], concat))
@@ -64,6 +64,8 @@ class OffenseEval(Dataset):
         return self.leng
 
     def __getitem__(self, idx):
+        if(idx == 0):
+            return __getitem__(idx + 1)
         line = linecache.getline(self.path, idx + 1)[:-1]
         contents = line.split("\t")
         contents = self.map_index(contents)
