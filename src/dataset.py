@@ -6,6 +6,8 @@ import numpy as np
 from torch.utils.data import Dataset, DataLoader
 
 _GLOVE_PATH = '/home/nevronas/word_embeddings/glove_twitter'
+_MAX_LEN = 102
+_EMB_DIM = 50
 
 def init_glove(glove_path=_GLOVE_PATH): # Run only first time
     words = []
@@ -22,7 +24,7 @@ def init_glove(glove_path=_GLOVE_PATH): # Run only first time
             vect = np.array(line[1:]).astype(np.float)
             vectors.append(vect)
 
-    vectors = bcolz.carray(vectors.reshape((1193514, 50)), rootdir='{}/27B.50.dat'.format(glove_path), mode='w')
+    vectors = bcolz.carray(vectors.reshape((1193514, _EMB_DIM)), rootdir='{}/27B.50.dat'.format(glove_path), mode='w')
     vectors.flush()
     pickle.dump(words, open('{}/27B.50_words.pkl'.format(glove_path), 'wb'))
     pickle.dump(word2idx, open('{}/27B.50_idx.pkl'.format(glove_path), 'wb'))
@@ -53,6 +55,9 @@ class OffenseEval(Dataset):
         contents['SUBB'] = SUBB.index(contentstr[3])
         contents['SUBC'] = SUBC.index(contentstr[4])
         contents['embeddings'] = np.asarray([self.glove.get(word, self.glove['unk']) for word in  contents["instance"].split(" ")[1:]])
+        # TODO:  concatenate end of line word embedding, then :
+        concat = np.zeros((_MAX_LEN - contents["embeddings"].shape[0], _EMB_DIM))
+        contents["embeddings"] = np.concatenate((contents["embeddings"], concat))
         return contents
 
     def __len__(self):
