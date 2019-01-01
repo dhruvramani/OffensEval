@@ -77,4 +77,4 @@ if __name__ == '__main__':
     dataloader = iter(dataloader)
     for i in range(0, len(dataloader)):
         embeddings, suba = next(dataloader)
-        print(embeddings, suba)
+        print("{} - {}".format(embeddings.shape, suba.shape))
