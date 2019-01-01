@@ -74,5 +74,5 @@ if __name__ == '__main__':
     dataloader = DataLoader(dataset, batch_size=10, shuffle=True)
     dataloader = iter(dataloader)
     for i in range(0, len(dataloader)):
-        contents = next(dataloader)
-        print(contents["embeddings"], contents['SUBA'])
+        embeddings, suba = next(dataloader)
+        print(embeddings, suba)
