@@ -65,7 +65,7 @@ class OffenseEval(Dataset):
 
     def __getitem__(self, idx):
         if(idx == 0):
-            return __getitem__(idx + 1)
+            return self.__getitem__(idx + 1)
         line = linecache.getline(self.path, idx + 1)[:-1]
         contents = line.split("\t")
         contents = self.map_index(contents)
