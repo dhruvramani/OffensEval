@@ -74,8 +74,6 @@ def train_network(epoch):
     for i in range(tstep, len(dataloader)):
         contents = next(dataloader)
         inputs, targets = contents[0].type(torch.FloatTensor).to(device), contents[1].type(torch.LongTensor).to(device)
-        print(inputs, targets)
-        _ = input()
         optimizer.zero_grad()
         y_pred = net(inputs)
         loss = criterion(y_pred, targets)
@@ -93,7 +91,7 @@ def train_network(epoch):
         with open("../save/logs/train_loss.log", "a+") as lfile:
             lfile.write("{}\n".format(train_loss))
 
-        progress_bar(i, len(dataloader), 'Loss: {}, Con Loss: {}, Sty Loss: {} '.format(train_loss, tr_con, tr_sty))
+        progress_bar(i, len(dataloader), 'Loss: {}'.format(train_loss))
 
     tstep = 0
     del dataloader
