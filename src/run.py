@@ -39,7 +39,7 @@ print('==> Preparing data..')
     return audios, captions'''
 
 
-classes = {"A" : 2, "B" : 2, "C" : 3}
+classes = {"A" : 3, "B" : 3, "C" : 4}
 print('==> Creating network..')
 net = LSTMClassifier(args.batch_size, classes[args.subtask], 25, args.embedding_length)
 net = net.to(device)
