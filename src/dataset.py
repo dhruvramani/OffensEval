@@ -56,7 +56,6 @@ class OffenseEval(Dataset):
         contents['SUBC'] = SUBC.index(contentstr[4])
         contents['embeddings'] = np.asarray([self.glove.get(word, self.glove['unk']) for word in  contents["instance"].split(" ")])
         # TODO:  concatenate end of line word embedding, then :
-        print(contents["embeddings"].shape[0])
         concat = np.zeros((_MAX_LEN - contents["embeddings"].shape[0], _EMB_DIM))
         contents["embeddings"] = np.concatenate((contents["embeddings"], concat))
         return contents
