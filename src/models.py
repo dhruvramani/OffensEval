@@ -50,9 +50,9 @@ class LSTMClassifier(nn.Module):
         
         ''' Here we will map all the indexes present in the input sequence to the corresponding word vector using our pre-trained word_embedddins.'''
         #input = self.word_embeddings(input_sentence) # embedded input of shape = (batch_size, num_sequences,  embedding_length)
-        input = input.permute(1, 0, 2) # input.size() = (num_sequences, batch_size, embedding_length)
+        input_sentence = input_sentence.permute(1, 0, 2) # input.size() = (num_sequences, batch_size, embedding_length)
 
-        output, (final_hidden_state, final_cell_state) = self.lstm(input, (self.h_0, self.c_0))
+        output, (final_hidden_state, final_cell_state) = self.lstm(input_sentence, (self.h_0, self.c_0))
         final_output = self.label(final_hidden_state[-1]) # final_hidden_state.size() = (1, batch_size, hidden_size) & final_output.size() = (batch_size, output_size)
         
         return final_output
@@ -137,9 +137,9 @@ class AttentionModel(torch.nn.Module):
         """
         
         #input = self.word_embeddings(input_sentences)
-        input = input.permute(1, 0, 2)
+        input_sentence = input_sentence.permute(1, 0, 2)
             
-        output, (final_hidden_state, final_cell_state) = self.lstm(input, (self.h_0, self.c_0)) # final_hidden_state.size() = (1, batch_size, hidden_size) 
+        output, (final_hidden_state, final_cell_state) = self.lstm(input_sentence, (self.h_0, self.c_0)) # final_hidden_state.size() = (1, batch_size, hidden_size) 
         output = output.permute(1, 0, 2) # output.size() = (batch_size, num_seq, hidden_size)
         
         attn_output = self.attention_net(output, final_hidden_state)
