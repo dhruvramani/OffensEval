@@ -86,10 +86,10 @@ def train_network(epoch):
         torch.cuda.empty_cache()
 
         torch.save(net.state_dict(), '../save/network.ckpt')
-        with open("../save/transform/info.txt", "w+") as f:
+        with open("../save/info.txt", "w+") as f:
             f.write("{} {}".format(epoch, i))
 
-        with open("../save/transform/logs/train_loss.log", "a+") as lfile:
+        with open("../save/logs/train_loss.log", "a+") as lfile:
             lfile.write("{}\n".format(train_loss))
 
         progress_bar(i, len(dataloader), 'Loss: {}, Con Loss: {}, Sty Loss: {} '.format(train_loss, tr_con, tr_sty))
