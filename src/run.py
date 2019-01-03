@@ -15,7 +15,7 @@ from utils import progress_bar
 
 parser = argparse.ArgumentParser(description='PyTorch OffenseEval - run dataset.py first for word embeddings')
 parser.add_argument('--lr', default=0.001, type=float, help='learning rate') # NOTE :  change for diff models
-parser.add_argument('--batch_size', default=32, type=int)
+parser.add_argument('--batch_size', default=25, type=int)
 parser.add_argument('--resume', '-r', type=int, default=0, help='resume from checkpoint')
 parser.add_argument('--epochs', '-e', type=int, default=10, help='Number of epochs to train.')
 parser.add_argument('--subtask', default='A', help="Sub-task for OffensEval")
