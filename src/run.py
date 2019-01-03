@@ -15,7 +15,7 @@ from utils import progress_bar
 
 parser = argparse.ArgumentParser(description='PyTorch OffenseEval - run dataset.py first for word embeddings')
 parser.add_argument('--lr', default=0.001, type=float, help='learning rate') # NOTE :  change for diff models
-parser.add_argument('--batch_size', default=25, type=int)
+parser.add_argument('--batch_size', default=32, type=int)
 parser.add_argument('--resume', '-r', type=int, default=0, help='resume from checkpoint')
 parser.add_argument('--epochs', '-e', type=int, default=10, help='Number of epochs to train.')
 parser.add_argument('--subtask', default='A', help="Sub-task for OffensEval")
@@ -24,19 +24,19 @@ parser.add_argument('--embedding_length', default=50, type=int)
 args = parser.parse_args()
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-best_acc, tsepoch, tstep, lsepoch, lstep = 0, 0, 0, 0, 0
+best_acc, tsepoch, tstep = 0, 0, 0
 
 criterion = torch.nn.CrossEntropyLoss()
 
 print('==> Preparing data..')
 
-def collate_fn(data):
+'''def collate_fn(data):
     data = list(filter(lambda x: type(x[1]) != int, data))
     audios, captions = zip(*data)
     data = None
     del data
     audios = torch.stack(audios, 0)
-    return audios, captions
+    return audios, captions'''
 
 
 classes = {"A" : 2, "B" : 2, "C" : 3}
@@ -63,7 +63,7 @@ def train_network(epoch):
     print('\n=> Epoch: {}'.format(epoch))
     net.train()
     
-    dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/train-v1/offenseval-training-v1.tsv')
+    dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/train-v1/offenseval-training-v1.tsv', task=args.subtask)
     dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True)#,  collate_fn=collate_fn)
     dataloader = iter(dataloader)
 
@@ -73,7 +73,7 @@ def train_network(epoch):
 
     for i in range(tstep, len(dataloader)):
         contents = next(dataloader)
-        inputs, targets = torch.Tensor(contents["embeddings"]).to(device), torch.Tensor(contents[args.subtask]).to(device)
+        inputs, targets = torch.Tensor(contents[0]).to(device), torch.Tensor(contents[1]).to(device)
 
         optimizer.zero_grad()
         y_pred = net(inputs)

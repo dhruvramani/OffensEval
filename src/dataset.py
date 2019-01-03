@@ -73,7 +73,7 @@ class OffenseEval(Dataset):
 
 if __name__ == '__main__':
     dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/train-v1/offenseval-training-v1.tsv')
-    dataloader = DataLoader(dataset, batch_size=10, shuffle=True)
+    dataloader = DataLoader(dataset, batch_size=40, shuffle=True)
     dataloader = iter(dataloader)
     for i in range(0, len(dataloader)):
         embeddings, suba = next(dataloader)

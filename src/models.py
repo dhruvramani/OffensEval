@@ -22,7 +22,7 @@ class LSTMClassifier(nn.Module):
         self.batch_size = batch_size
         self.output_size = output_size
         self.hidden_size = hidden_size
-        self.vocab_size = vocab_size
+        #self.vocab_size = vocab_size
         self.embedding_length = embedding_length
         
         # NOTE : ignoring word_embedding as we already get pretrained embeddings
@@ -79,7 +79,6 @@ class AttentionModel(torch.nn.Module):
         self.batch_size = batch_size
         self.output_size = output_size
         self.hidden_size = hidden_size
-        self.vocab_size = vocab_size
         self.embedding_length = embedding_length
         
         #self.word_embeddings = nn.Embedding(vocab_size, embedding_length)
