@@ -6,7 +6,7 @@ import numpy as np
 from torch.utils.data import Dataset, DataLoader
 
 _GLOVE_PATH = '/home/nevronas/word_embeddings/glove_twitter'
-_MAX_LEN = 102
+_MAX_LEN = 103
 _EMB_DIM = 50
 
 def init_glove(glove_path=_GLOVE_PATH): # Run only first time
