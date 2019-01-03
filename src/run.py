@@ -73,7 +73,7 @@ def train_network(epoch):
 
     for i in range(tstep, len(dataloader)):
         contents = next(dataloader)
-        inputs, targets = torch.Tensor(contents[0]).to(device), torch.Tensor(contents[1]).to(device)
+        inputs, targets = contents[0].type(torch.FloatTensor).to(device), contents[1].type(torch.LongTensor).to(device)
 
         optimizer.zero_grad()
         y_pred = net(inputs)
