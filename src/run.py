@@ -97,7 +97,7 @@ def train_network(epoch):
 
     tstep = 0
     del dataloader
-    print('=> Network : Epoch [{}/{}], Loss:{:.4f}'.format(epoch + 1, args.epochs, train_loss / le)
+    print('=> Network : Epoch [{}/{}], Loss:{:.4f}'.format(epoch + 1, args.epochs, train_loss / le))
 
 
 def test():
