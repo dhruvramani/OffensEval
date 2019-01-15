@@ -31,7 +31,7 @@ def init_glove(glove_path=_GLOVE_PATH): # Run only first time
     return idx
 
 def collate_fn(data):
-    data = list(filter(lambda x: -1 not in x[1:3] , data))
+    data = list(filter(lambda x: (-1 not in x[1]) and (-1 not in x[2]) and (-1 not in x[3]), data))
     embeddings, suba, subb, subc = zip(*data)
     return embeddings, suba, subb, subc
 
