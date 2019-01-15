@@ -18,7 +18,7 @@ parser.add_argument('--lr', default=0.001, type=float, help='learning rate') # N
 parser.add_argument('--batch_size', default=25, type=int)
 parser.add_argument('--resume', '-r', type=int, default=0, help='resume from checkpoint')
 parser.add_argument('--epochs', '-e', type=int, default=10, help='Number of epochs to train.')
-parser.add_argument('--subtask', default='A', help="Sub-task for OffensEval")
+parser.add_argument('--subtask', default='C', help="Sub-task for OffensEval")
 parser.add_argument('--embedding_length', default=50, type=int)
 
 args = parser.parse_args()
@@ -41,7 +41,7 @@ print('==> Preparing data..')
 
 classes = {"A" : 3, "B" : 3, "C" : 4}
 print('==> Creating network..')
-net = LSTMClassifier(args.batch_size, classes[args.subtask], 25, args.embedding_length)
+net = AttentionModel(args.batch_size, classes[args.subtask], 25, args.embedding_length)
 net = net.to(device)
 
 if(args.resume):
@@ -74,7 +74,6 @@ def train_network(epoch):
     for i in range(tstep, len(dataloader) - 1):
         contents = next(dataloader)
         inputs, targets = contents[0].type(torch.FloatTensor).to(device), contents[1].type(torch.LongTensor).to(device)
-        print(inputs, targets)
         optimizer.zero_grad()
         y_pred = net(inputs)
         loss = criterion(y_pred, targets)
