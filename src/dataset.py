@@ -81,5 +81,5 @@ if __name__ == '__main__':
     dataloader = iter(dataloader)
     for i in range(0, len(dataloader)):
         embeddings, suba, subb, subc = next(dataloader)
-        print(suba.shape, subb.shape, subc.shape)
+        print(suba, subb, subc)
         break
