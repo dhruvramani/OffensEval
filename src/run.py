@@ -67,7 +67,7 @@ def train_network(epoch):
     dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True)#,  collate_fn=collate_fn)
     dataloader = iter(dataloader)
 
-    train_loss = 0
+    train_loss, accuracy = 0.0, 0.0
     le = len(dataloader) - 1
     params = net.parameters()     
     optimizer = torch.optim.Adam(params, lr=args.lr) 
@@ -77,9 +77,12 @@ def train_network(epoch):
         inputs, targets = contents[0].type(torch.FloatTensor).to(device), contents[1].type(torch.LongTensor).to(device)
         optimizer.zero_grad()
         y_pred = net(inputs)
+        pred = torch.max(y_pred, 1)
         loss = criterion(y_pred, targets)
         tl = loss.item()
+        acc = (pred == y_pred).sum().item()
         train_loss += tl
+        accuracy += acc
         loss.backward()
         optimizer.step()
 
@@ -93,11 +96,11 @@ def train_network(epoch):
         with open("../save/logs/train_loss.log", "a+") as lfile:
             lfile.write("{}\n".format(tl))
 
-        progress_bar(i, len(dataloader), 'Loss: {}'.format(tl))
+        progress_bar(i, len(dataloader), 'Loss: {}, Acc: {}'.format(tl, acc))
 
     tstep = 0
     del dataloader
-    print('=> Network : Epoch [{}/{}], Loss:{:.4f}'.format(epoch + 1, args.epochs, train_loss / le))
+    print('=> Network : Epoch [{}/{}], Loss:{:.4f}, Accuracy:{:.4f}'.format(epoch + 1, args.epochs, train_loss / le, accuracy / le))
 
 
 def test():
