@@ -64,7 +64,7 @@ def train_network(epoch):
     net.train()
     
     dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/train-v1/offenseval-training-v1.tsv')
-    dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True)#,  collate_fn=collate_fn)
+    dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True, collate_fn=collate_fn)
     dataloader = iter(dataloader)
 
     train_loss, accu1, accu2, accu3 = 0.0, 0.0, 0.0, 0.0
