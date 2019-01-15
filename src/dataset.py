@@ -67,6 +67,8 @@ class OffenseEval(Dataset):
             return self.__getitem__(idx + 1)
         line = linecache.getline(self.path, idx + 1)[:-1]
         contents = line.split("\t")
+        if(len(contents) <= 1):
+            return self.__getitem__(idx + 1)
         contents = self.map_index(contents)
         if(0 in [contents['SUB{}'.format(i)] for i in ['A', 'B', 'C']]):
             return self.__getitem__(idx + 1)
