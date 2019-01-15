@@ -86,9 +86,9 @@ def train_network(epoch):
         loss.backward()
         optimizer.step()
 
-        acc1 = f1_score(target_a.detach().cpu().numpy(), preds[0].detach().cpu().numpy())
-        acc2 = f1_score(target_b.detach().cpu().numpy(), preds[1].detach().cpu().numpy())
-        acc3 = f1_score(target_c.detach().cpu().numpy(), preds[2].detach().cpu().numpy())
+        acc1 = f1_score(target_a.detach().cpu().numpy(), preds[0].detach().cpu().numpy(), average='macro')
+        acc2 = f1_score(target_b.detach().cpu().numpy(), preds[1].detach().cpu().numpy(), average='macro')
+        acc3 = f1_score(target_c.detach().cpu().numpy(), preds[2].detach().cpu().numpy(), average='macro')
         
         train_loss += tl
         accu1 += acc1 
