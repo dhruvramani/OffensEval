@@ -76,7 +76,7 @@ def train_network(epoch):
         contents = next(dataloader)
         inputs = contents[0].type(torch.FloatTensor).to(device)
         target_a, target_b, target_c = [contents[i].type(torch.LongTensor).to(device) for i in range(1, len(contents), 1)]
-        targets = [target_a, target_b, target]
+        targets = [target_a, target_b, target_c]
         optimizer.zero_grad()
         y_preds = net(inputs)
         preds = [torch.max(y_pred, 1)[0].type(torch.LongTensor) for y_pred in y_preds]
