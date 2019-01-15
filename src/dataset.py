@@ -30,6 +30,10 @@ def init_glove(glove_path=_GLOVE_PATH): # Run only first time
     pickle.dump(word2idx, open('{}/27B.50_idx.pkl'.format(glove_path), 'wb'))
     return idx
 
+def collate_fn(data):
+    data = list(filter(lambda x: -1 not in x[1:3] , data))
+    return data
+
 class OffenseEval(Dataset):
     """OffenseEval dataset."""
 
@@ -68,13 +72,11 @@ class OffenseEval(Dataset):
         line = linecache.getline(self.path, idx + 1)[:-1]
         contents = line.split("\t")
         contents = self.map_index(contents)
-        if(0 in [contents['SUB{}'.format(i)] for i in ['A', 'B', 'C']]):
-            return self.__getitem__(idx + 2)
         return contents['embeddings'], contents['SUBA'] - 1, contents['SUBB'] - 1, contents['SUBC'] - 1
 
 if __name__ == '__main__':
     dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/train-v1/offenseval-training-v1.tsv')
-    dataloader = DataLoader(dataset, batch_size=40, shuffle=True)
+    dataloader = DataLoader(dataset, batch_size=40, shuffle=True, collate_fn=collate_fn)
     dataloader = iter(dataloader)
     for i in range(0, len(dataloader)):
         embeddings, suba, subb, subc = next(dataloader)
