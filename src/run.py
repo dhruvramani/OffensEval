@@ -71,7 +71,7 @@ def train_network(epoch):
     params = net.parameters()     
     optimizer = torch.optim.Adam(params, lr=args.lr) 
 
-    for i in range(tstep, len(dataloader)):
+    for i in range(tstep, len(dataloader) - 1):
         contents = next(dataloader)
         inputs, targets = contents[0].type(torch.FloatTensor).to(device), contents[1].type(torch.LongTensor).to(device)
         optimizer.zero_grad()

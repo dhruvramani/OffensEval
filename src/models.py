@@ -121,7 +121,7 @@ class AttentionModel(torch.nn.Module):
         
         return new_hidden_state
     
-    def forward(self, input_sentences):
+    def forward(self, input_sentence):
     
         """ 
         Parameters
