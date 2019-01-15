@@ -68,10 +68,11 @@ def train_network(epoch):
     dataloader = iter(dataloader)
 
     train_loss = 0
+    le = len(dataloader) - 1
     params = net.parameters()     
     optimizer = torch.optim.Adam(params, lr=args.lr) 
 
-    for i in range(tstep, len(dataloader) - 1):
+    for i in range(tstep, le):
         contents = next(dataloader)
         inputs, targets = contents[0].type(torch.FloatTensor).to(device), contents[1].type(torch.LongTensor).to(device)
         optimizer.zero_grad()
@@ -96,7 +97,7 @@ def train_network(epoch):
 
     tstep = 0
     del dataloader
-    print('=> Network : Epoch [{}/{}], Loss:{:.4f}'.format(epoch + 1, args.epochs, train_loss / (len(dataloader) - 1)))
+    print('=> Network : Epoch [{}/{}], Loss:{:.4f}'.format(epoch + 1, args.epochs, train_loss / le)
 
 
 def test():
