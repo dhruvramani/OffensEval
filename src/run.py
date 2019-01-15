@@ -79,7 +79,7 @@ def train_network(epoch):
         y_pred = net(inputs)
         pred = torch.max(y_pred, 1)[0].type(torch.LongTensor)
         loss = criterion(y_pred, targets)
-        acc = (pred == targets).sum().item()
+        acc = (pred.to(device) == targets.to(device)).sum().item()
         train_loss += tl
         accuracy += acc
         loss.backward()
