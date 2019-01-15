@@ -33,12 +33,11 @@ def init_glove(glove_path=_GLOVE_PATH): # Run only first time
 class OffenseEval(Dataset):
     """OffenseEval dataset."""
 
-    def __init__(self, path, glove_path=_GLOVE_PATH, task='A'):
+    def __init__(self, path, glove_path=_GLOVE_PATH):
         self.path = path
         self.glove_path = glove_path
         self.leng = sum(1 for line in open(self.path)) 
         self.glove = self.load_glove()
-        self.task = task
 
     def load_glove(self):
         vectors = bcolz.open('{}/27B.50.dat'.format(self.glove_path))[:]
@@ -69,12 +68,15 @@ class OffenseEval(Dataset):
         line = linecache.getline(self.path, idx + 1)[:-1]
         contents = line.split("\t")
         contents = self.map_index(contents)
-        return contents['embeddings'], contents['SUB{}'.format(self.task)]
+        if(0 in [contents['SUB{}'.format(i)] for i in ['A', 'B', 'C']]):
+            return self.__getitem__(idx + 1)
+        return contents['embeddings'], contents['SUBA'] - 1, contents['SUBB'] - 1, contents['SUBC'] - 1
 
 if __name__ == '__main__':
     dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/train-v1/offenseval-training-v1.tsv')
     dataloader = DataLoader(dataset, batch_size=40, shuffle=True)
     dataloader = iter(dataloader)
     for i in range(0, len(dataloader)):
-        embeddings, suba = next(dataloader)
-        #print(suba.shape)
+        embeddings, suba, subb, subc = next(dataloader)
+        print(suba.shape, subb.shape, subc.shape)
+        break

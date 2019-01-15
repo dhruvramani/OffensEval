@@ -59,7 +59,7 @@ class LSTMClassifier(nn.Module):
 
 
 class AttentionModel(torch.nn.Module):
-    def __init__(self, batch_size, output_size, hidden_size, embedding_length):
+    def __init__(self, batch_size, output_sizes, hidden_size, embedding_length):
         super(AttentionModel, self).__init__()
         
         """
@@ -77,14 +77,16 @@ class AttentionModel(torch.nn.Module):
         """
         
         self.batch_size = batch_size
-        self.output_size = output_size
+        self.output_sizes = output_sizes
         self.hidden_size = hidden_size
         self.embedding_length = embedding_length
         
         #self.word_embeddings = nn.Embedding(vocab_size, embedding_length)
         #self.word_embeddings.weights = nn.Parameter(weights, requires_grad=False)
         self.lstm = nn.LSTM(embedding_length, hidden_size)
-        self.label = nn.Linear(hidden_size, output_size)
+        self.label1 = nn.Linear(hidden_size, self.output_sizes[0])
+        self.label2 = nn.Linear(hidden_size, self.output_sizes[1])
+        self.label3 = nn.Linear(hidden_size, self.output_sizes[2])
         self.h_0 = Variable(torch.zeros(1, self.batch_size, self.hidden_size).cuda())
         self.c_0 = Variable(torch.zeros(1, self.batch_size, self.hidden_size).cuda())
         #self.attn_fc_layer = nn.Linear()
@@ -143,6 +145,8 @@ class AttentionModel(torch.nn.Module):
         output = output.permute(1, 0, 2) # output.size() = (batch_size, num_seq, hidden_size)
         
         attn_output = self.attention_net(output, final_hidden_state)
-        logits = self.label(attn_output)
+        logits1 = self.label1(attn_output)
+        logits2 = self.label2(attn_output)
+        logits3 = self.label3(attn_output)
         
-        return logits
+        return logits1, logits2, logits3

@@ -5,6 +5,7 @@ import argparse
 import numpy as np
 import torch.nn.functional as F
 from torch.autograd import Variable
+from sklearn.metrics import f1_score
 import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
 
@@ -38,10 +39,9 @@ print('==> Preparing data..')
     audios = torch.stack(audios, 0)
     return audios, captions'''
 
-
-classes = {"A" : 3, "B" : 3, "C" : 4}
+classes = {"A" : 2, "B" : 2, "C" : 3}
 print('==> Creating network..')
-net = AttentionModel(args.batch_size, classes[args.subtask], 25, args.embedding_length)
+net = AttentionModel(args.batch_size, [2, 2, 3], 25, args.embedding_length)
 net = net.to(device)
 
 if(args.resume):
@@ -63,28 +63,37 @@ def train_network(epoch):
     print('\n=> Epoch: {}'.format(epoch))
     net.train()
     
-    dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/train-v1/offenseval-training-v1.tsv', task=args.subtask)
+    dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/train-v1/offenseval-training-v1.tsv')
     dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True)#,  collate_fn=collate_fn)
     dataloader = iter(dataloader)
 
-    train_loss, accuracy = 0.0, 0.0
+    train_loss, accu1, accu2, accu3 = 0.0, 0.0, 0.0, 0.0
     le = len(dataloader) - 1
     params = net.parameters()     
     optimizer = torch.optim.Adam(params, lr=args.lr) 
 
     for i in range(tstep, le):
         contents = next(dataloader)
-        inputs, targets = contents[0].type(torch.FloatTensor).to(device), contents[1].type(torch.LongTensor).to(device)
+        inputs = contents[0].type(torch.FloatTensor).to(device)
+        target_a, target_b, target_c = [contents[i].type(torch.LongTensor).to(device) for i in range(1, len(contents), 1)]
+        targets = [target_a, target_b, target]
         optimizer.zero_grad()
-        y_pred = net(inputs)
-        pred = torch.max(y_pred, 1)[0].type(torch.LongTensor)
-        loss = criterion(y_pred, targets)
+        y_preds = net(inputs)
+        preds = [torch.max(y_pred, 1)[0].type(torch.LongTensor) for y_pred in y_preds]
+        
+        loss = criterion(y_preds[0], target_a) + criterion(y_preds[1], target_b) + criterion(y_preds[2], target_c)
         tl = loss.item()
-        acc = (pred.to(device) == targets.to(device)).sum().item()
-        train_loss += tl
-        accuracy += acc
         loss.backward()
         optimizer.step()
+
+        acc1 = f1_score(target_a.detach().cpu().numpy(), preds[0].detach().cpu().numpy())
+        acc2 = f1_score(target_b.detach().cpu().numpy(), preds[1].detach().cpu().numpy())
+        acc3 = f1_score(target_c.detach().cpu().numpy(), preds[2].detach().cpu().numpy())
+        
+        train_loss += tl
+        accu1 += acc1 
+        accu2 += acc2 
+        accu3 += acc3
 
         gc.collect()
         torch.cuda.empty_cache()
@@ -96,11 +105,11 @@ def train_network(epoch):
         with open("../save/logs/train_loss.log", "a+") as lfile:
             lfile.write("{}\n".format(tl))
 
-        progress_bar(i, len(dataloader), 'Loss: {}, Acc: {}'.format(tl, acc))
+        progress_bar(i, len(dataloader), 'Loss: {}, F1s: {} - {} - {}'.format(tl, accu1, accu2, accu3))
 
     tstep = 0
     del dataloader
-    print('=> Network : Epoch [{}/{}], Loss:{:.4f}, Accuracy:{:.4f}'.format(epoch + 1, args.epochs, train_loss / le, accuracy / le))
+    print('=> Network : Epoch [{}/{}], Loss:{:.4f}, F1:{:.4f} - {:.4f} - {:.4f}'.format(epoch + 1, args.epochs, train_loss / le, accu1 / le, accu2 / le, accu3 / le))
 
 
 def test():
