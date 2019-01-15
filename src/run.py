@@ -72,7 +72,7 @@ def train_network(epoch):
     params = net.parameters()     
     optimizer = torch.optim.Adam(params, lr=args.lr) 
 
-    for i in range(tstep, le):
+    for i in range(tstep + 1, le):
         contents = next(dataloader)
         inputs = contents[0].type(torch.FloatTensor).to(device)
         target_a, target_b, target_c = [contents[i].type(torch.LongTensor).to(device) for i in range(1, len(contents), 1)]
