@@ -77,7 +77,8 @@ def train_network(epoch):
         optimizer.zero_grad()
         y_pred = net(inputs)
         loss = criterion(y_pred, targets)
-        train_loss = loss.item()
+        tl = loss.item()
+        train_loss += tl
         loss.backward()
         optimizer.step()
 
@@ -89,13 +90,13 @@ def train_network(epoch):
             f.write("{} {}".format(epoch, i))
 
         with open("../save/logs/train_loss.log", "a+") as lfile:
-            lfile.write("{}\n".format(train_loss))
+            lfile.write("{}\n".format(tl))
 
-        progress_bar(i, len(dataloader), 'Loss: {}'.format(train_loss))
+        progress_bar(i, len(dataloader), 'Loss: {}'.format(tl))
 
     tstep = 0
     del dataloader
-    print('=> Network : Epoch [{}/{}], Loss:{:.4f}'.format(epoch + 1, args.epochs, train_loss))
+    print('=> Network : Epoch [{}/{}], Loss:{:.4f}'.format(epoch + 1, args.epochs, train_loss / (len(dataloader) - 1)))
 
 
 def test():
