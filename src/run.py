@@ -144,14 +144,14 @@ def test():
 
     for i in range(0, len(dataloader)):
         contents = next(dataloader)
-        print(contents)
         inputs = contents[1].type(torch.FloatTensor).to(device)
         y_preds = net(inputs)
         clas = torch.max(y_preds, 1)[0].type(torch.LongTensor) - 1
         clas = clas.tolist()
         with open("../save/test.tsv", "a+") as f:
             for i in range(len(clas)):
-                f.write("{}\t{}\t{}\n".format(count, contents[0][i], test_dict.index(int(clas[i]))))
+                print(test_dict[int(clas[i])])
+                f.write("{}\t{}\t{}\n".format(count, contents[0][i], test_dict[int(clas[i])]))
                 count += 1
 
 #for epoch in range(tsepoch, tsepoch + args.epochs):
