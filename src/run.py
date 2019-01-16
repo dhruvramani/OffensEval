@@ -134,7 +134,7 @@ def test():
     net.load_state_dict(torch.load('../save/success/1.ckpt'))
     
     dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/testset-taska.tsv', train=False)
-    dataloader = DataLoader(dataset, batch_size=1) #, collate_fn=collate_fn)
+    dataloader = DataLoader(dataset, batch_size=args.batch_size) #, collate_fn=collate_fn)
     dataloader = iter(dataloader)
     test_dict = ['NOT', 'OFF']
     count = 0
