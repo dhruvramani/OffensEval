@@ -1,5 +1,6 @@
 import os
 import gc
+import csv
 import torch
 import argparse
 import numpy as np
@@ -137,24 +138,23 @@ def test():
     dataloader = DataLoader(dataset, batch_size=args.batch_size) #, collate_fn=collate_fn)
     dataloader = iter(dataloader)
     test_dict = ['NOT', 'OFF']
-    count = 0
 
-    with open("../save/test.tsv", "w+") as f:
-        f.write("id\ttweet\tsubtask_a\n")
+    with open('../save/test.tsv', 'w+') as f:
+        tsv_writer = csv.writer(f, delimiter='\t')
+        tsv_writer.writerow(['id', 'tweet', 'subtask_a'])
 
-    for i in range(0, len(dataloader) - 1):
-        contents = next(dataloader)
-        inputs = contents[2].type(torch.FloatTensor).to(device)
-        y_preds = net(inputs)
-        clas = torch.max(y_preds, 1)[0].type(torch.LongTensor) - 1
-        clas = clas.tolist()
-        with open("../save/test.tsv", "a+") as f:
+        for i in range(0, len(dataloader) - 1):
+            contents = next(dataloader)
+            inputs = contents[2].type(torch.FloatTensor).to(device)
+            y_preds = net(inputs)
+            clas = torch.max(y_preds, 1)[0].type(torch.LongTensor) - 1
+            clas = clas.tolist()
+
             for i in range(len(clas)):
                 if(int(clas[i]) > 1):
                     clas[i] = 1
                 print(test_dict[int(clas[i])])
-                f.write("{}\t{}\t{}\n".format(contents[0][i], contents[1][i], test_dict[int(clas[i])]))
-                count += 1
+                tsv_writer.writerow([contents[0][i], contents[1][i], test_dict[int(clas[i])] ])
 
 #for epoch in range(tsepoch, tsepoch + args.epochs):
 #    train_network(epoch)
