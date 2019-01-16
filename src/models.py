@@ -85,8 +85,8 @@ class AttentionModel(torch.nn.Module):
         #self.word_embeddings.weights = nn.Parameter(weights, requires_grad=False)
         self.lstm = nn.LSTM(embedding_length, hidden_size)
         self.label1 = nn.Linear(hidden_size, self.output_sizes[0])
-        self.label2 = nn.Linear(hidden_size, self.output_sizes[1])
-        self.label3 = nn.Linear(hidden_size, self.output_sizes[2])
+        #self.label2 = nn.Linear(hidden_size, self.output_sizes[1])
+        #self.label3 = nn.Linear(hidden_size, self.output_sizes[2])
         self.h_0 = Variable(torch.zeros(1, self.batch_size, self.hidden_size).cuda())
         self.c_0 = Variable(torch.zeros(1, self.batch_size, self.hidden_size).cuda())
         #self.attn_fc_layer = nn.Linear()
@@ -146,7 +146,7 @@ class AttentionModel(torch.nn.Module):
         
         attn_output = self.attention_net(output, final_hidden_state)
         logits1 = self.label1(attn_output)
-        logits2 = self.label2(attn_output)
-        logits3 = self.label3(attn_output)
+        #logits2 = self.label2(attn_output)
+        #logits3 = self.label3(attn_output)
         
-        return logits1, logits2, logits3
+        return logits1 #, logits2, logits3
