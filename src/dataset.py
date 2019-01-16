@@ -73,7 +73,7 @@ class OffenseEval(Dataset):
         line = linecache.getline(self.path, idx + 1)[:-1]
         contents = line.split("\t")
         contents = self.map_index(contents)
-        return contents['embeddings'], contents['SUBA'] - 1, contents['SUBB'] - 1, contents['SUBC'] - 1
+        return contents['embeddings'], contents['SUBA'], contents['SUBB'], contents['SUBC']
 
 if __name__ == '__main__':
     dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/train-v1/offenseval-training-v1.tsv')
@@ -82,7 +82,7 @@ if __name__ == '__main__':
     for i in range(0, len(dataloader)):
         embeddings, suba, subb, subc = next(dataloader)
         suban, subbn, subcn = suba.detach().cpu().numpy(), subb.detach().cpu().numpy(), subc.detach().cpu().numpy()
-        mask1, mask2, mask3 = np.where(suban == -1), np.where(subbn == -1), np.where(subcn == -1)
+        mask1, mask2, mask3 = np.where(suban == 0), np.where(subbn == 0), np.where(subcn == 0)
         loss = np.ones(suban.shape)
         loss[mask1] = 0
         loss[mask2] = 0

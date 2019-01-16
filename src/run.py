@@ -79,7 +79,7 @@ def train_network(epoch):
         targets = [target_a, target_b, target_c]
         
         suban, subbn, subcn = target_a.detach().cpu().numpy(), target_b.detach().cpu().numpy(), target_c.detach().cpu().numpy()
-        mask1, mask2, mask3 = np.where(suban == -1), np.where(subbn == -1), np.where(subcn == -1)
+        mask1, mask2, mask3 = np.where(suban == 0), np.where(subbn == 0), np.where(subcn == 0)
 
         optimizer.zero_grad()
         y_preds = net(inputs)
