@@ -80,7 +80,7 @@ class OffenseEval(Dataset):
         contents = self.map_index(contents)
         if(self.train):
             return contents['embeddings'], contents['SUBA'] #, contents['SUBB'], contents['SUBC']
-        return content["instance"], contents['embeddings']
+        return contents["instance"], contents['embeddings']
 
 if __name__ == '__main__':
     dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/train-v1/offenseval-training-v1.tsv')
