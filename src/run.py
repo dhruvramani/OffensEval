@@ -25,7 +25,7 @@ parser.add_argument('--embedding_length', default=50, type=int)
 args = parser.parse_args()
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-best_acc, tsepoch, tstep = 0, 0, 0
+best_acc, tsepoch, tstep = [0., 0., 0.], 0, 0
 
 criterion = torch.nn.CrossEntropyLoss(reduction='none')
 
@@ -119,7 +119,9 @@ def train_network(epoch):
     tstep = 0
     del dataloader
     print('=> Network : Epoch [{}/{}], Loss:{:.4f}, F1:{:.4f} - {:.4f} - {:.4f}'.format(epoch + 1, args.epochs, train_loss / le, accu1 / le, accu2 / le, accu3 / le))
-
+    accu = [accu1/le, accu2/le, accu3/le]
+    best_acc = [max(best_acc[i], accu[i]) for i in range(3)]
+    print("Best Metrics : {}".format(best_acc))
 
 def test():
     # TODO
