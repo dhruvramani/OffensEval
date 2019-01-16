@@ -16,7 +16,7 @@ from utils import progress_bar
 
 parser = argparse.ArgumentParser(description='PyTorch OffenseEval - run dataset.py first for word embeddings')
 parser.add_argument('--lr', default=0.01, type=float, help='learning rate') # NOTE :  change for diff models
-parser.add_argument('--batch_size', default=25, type=int)
+parser.add_argument('--batch_size', default=50, type=int)
 parser.add_argument('--resume', '-r', type=int, default=0, help='resume from checkpoint')
 parser.add_argument('--epochs', '-e', type=int, default=50, help='Number of epochs to train.')
 parser.add_argument('--subtask', default='C', help="Sub-task for OffensEval")
@@ -133,7 +133,7 @@ def test():
     global net
     net.load_state_dict(torch.load('../save/best.ckpt'))
     
-    dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/testset-taska.tsv')
+    dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/testset-taska.tsv', train=False)
     dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True) #, collate_fn=collate_fn)
     dataloader = iter(dataloader)
     test_dict = ['NOT', 'OFF']
@@ -144,6 +144,7 @@ def test():
 
     for i in range(0, len(dataloader)):
         contents = next(dataloader)
+        print(contents)
         inputs = contents[1]
         y_preds = net(inputs)
         clas = torch.max(y_preds, 1)[0].type(torch.LongTensor) - 1
