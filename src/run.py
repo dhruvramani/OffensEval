@@ -131,7 +131,7 @@ def train_network(epoch):
 
 def test():
     global net
-    net.load_state_dict(torch.load('../save/best.ckpt'))
+    net.load_state_dict(torch.load('../save/success/1.ckpt'))
     
     dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/testset-taska.tsv', train=False)
     dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True) #, collate_fn=collate_fn)
