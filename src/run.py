@@ -25,7 +25,7 @@ parser.add_argument('--embedding_length', default=50, type=int)
 args = parser.parse_args()
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-best_acc, tsepoch, tstep = [0., 0., 0.], 0, 0
+best_acc, tsepoch, tstep = 0., 0, 0#[0., 0., 0.], 0, 0
 
 criterion = torch.nn.CrossEntropyLoss(reduction='none')
 
@@ -116,18 +116,22 @@ def train_network(epoch):
         with open("../save/logs/train_loss.log", "a+") as lfile:
             lfile.write("{}\n".format(tl))
 
-        progress_bar(i, len(dataloader), 'Loss: {}, F1s: {} - {} - {}'.format(tl, acc1, acc2, acc3))
+        progress_bar(i, len(dataloader), 'Loss: {}, F1s: {} '.format(tl, acc1))#, acc2, acc3)) # "{} - {}"
 
     tstep = 0
     del dataloader
-    print('=> Network : Epoch [{}/{}], Loss:{:.4f}, F1:{:.4f} - {:.4f} - {:.4f}'.format(epoch + 1, args.epochs, train_loss / le, accu1 / le, accu2 / le, accu3 / le))
-    accu = [accu1/le, accu2/le, accu3/le]
-    best_acc = [max(best_acc[i], accu[i]) for i in range(3)]
+    print('=> Network : Epoch [{}/{}], Loss:{:.4f}, F1:{:.4f}'.format(epoch + 1, args.epochs, train_loss / le, accu1 / le)) #,  accu2 / le, accu3 / le))
+    #accu = [accu1/le, accu2/le, accu3/le]
+    #best_acc = [max(best_acc[i], accu[i]) for i in range(3)]
+    old_best = best_acc
+    best_acc = max(best_acc, accu1/le)
+    if(best_acc != old_best):
+        torch.save(net.state_dict(), '../save/best.ckpt')
     print("Best Metrics : {}".format(best_acc))
 
 def test():
     global net
-    net.load_state_dict(torch.load('../save/network.ckpt'))
+    net.load_state_dict(torch.load('../save/best.ckpt'))
     
     dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/testset-taska.tsv')
     dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True) #, collate_fn=collate_fn)
