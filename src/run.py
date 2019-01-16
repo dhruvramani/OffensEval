@@ -64,7 +64,7 @@ def train_network(epoch):
     net.train()
     
     dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/train-v1/offenseval-training-v1.tsv')
-    dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True, collate_fn=collate_fn)
+    dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True) #, collate_fn=collate_fn)
     dataloader = iter(dataloader)
 
     train_loss, accu1, accu2, accu3 = 0.0, 0.0, 0.0, 0.0
@@ -77,11 +77,20 @@ def train_network(epoch):
         inputs = contents[0].type(torch.FloatTensor).to(device)
         target_a, target_b, target_c = [contents[i].type(torch.LongTensor).to(device) for i in range(1, len(contents), 1)]
         targets = [target_a, target_b, target_c]
+        
+        suban, subbn, subcn = target_a.detach().cpu().numpy(), target_b.detach().cpu().numpy(), target_c.detach().cpu().numpy()
+        mask1, mask2, mask3 = np.where(suban == -1), np.where(subbn == -1), np.where(subcn == -1)
+
         optimizer.zero_grad()
         y_preds = net(inputs)
         preds = [torch.max(y_pred, 1)[0].type(torch.LongTensor) for y_pred in y_preds]
         
-        loss = criterion(y_preds[0], target_a) + criterion(y_preds[1], target_b) + criterion(y_preds[2], target_c)
+        l1, l2, l3 = criterion(y_preds[0], target_a), criterion(y_preds[1], target_b), criterion(y_preds[2], target_c)
+        l1, l2, l3 = l1.detach().cpu().numpy(), l2.detach().cpu().numpy(), l3.detach().cpu().numpy()
+        l1[mask1], l2[mask2], l3[mask3] = 0, 0, 0
+        l1, l2, l3 = torch.Tensor(l1).to(device), torch.Tensor(l2).to(device), torch.Tensor(l3).to(device)
+
+        loss = l1 + l2 + l3
         tl = loss.item()
         loss.backward()
         optimizer.step()
