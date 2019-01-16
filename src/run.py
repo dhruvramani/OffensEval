@@ -142,7 +142,7 @@ def test():
     with open("../save/test.tsv", "w+") as f:
         f.write("id\ttweet\tsubtask_a\n")
 
-    for i in range(0, len(dataloader)):
+    for i in range(0, len(dataloader) - 1):
         contents = next(dataloader)
         inputs = contents[1].type(torch.FloatTensor).to(device)
         y_preds = net(inputs)
