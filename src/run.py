@@ -154,7 +154,7 @@ def test():
                 f.write("{}\t{}\t{}\n".format(count, contents[0][i], test_dict.index(int(clas[i]))))
                 count += 1
 
-for epoch in range(tsepoch, tsepoch + args.epochs):
-    train_network(epoch)
+#for epoch in range(tsepoch, tsepoch + args.epochs):
+#    train_network(epoch)
 
-#test()
+test()
