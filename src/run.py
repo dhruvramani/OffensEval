@@ -87,7 +87,6 @@ def train_network(epoch):
         
         l1o, l2o, l3o = criterion(y_preds[0], target_a), criterion(y_preds[1], target_b), criterion(y_preds[2], target_c)
         l1, l2, l3 = l1o.detach().cpu().numpy(), l2o.detach().cpu().numpy(), l3o.detach().cpu().numpy()
-        print(l1.shape, suban.shape)
         l1[mask1], l2[mask2], l3[mask3] = 0, 0, 0
         l1, l2, l3 = torch.Tensor(l1).to(device), torch.Tensor(l2).to(device), torch.Tensor(l3).to(device)
 
