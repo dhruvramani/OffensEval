@@ -39,9 +39,9 @@ print('==> Preparing data..')
     audios = torch.stack(audios, 0)
     return audios, captions'''
 
-classes = {"A" : 2, "B" : 2, "C" : 3}
+classes = {"A" : 3, "B" : 3, "C" : 4}
 print('==> Creating network..')
-net = AttentionModel(args.batch_size, [2, 2, 3], 25, args.embedding_length)
+net = AttentionModel(args.batch_size, [3, 3, 4], 25, args.embedding_length)
 net = net.to(device)
 
 if(args.resume):
