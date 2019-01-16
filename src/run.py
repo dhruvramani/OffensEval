@@ -150,6 +150,7 @@ def test():
         clas = clas.tolist()
         with open("../save/test.tsv", "a+") as f:
             for i in range(len(clas)):
+                print(int(clas[i]), end=" ")
                 print(test_dict[int(clas[i])])
                 f.write("{}\t{}\t{}\n".format(count, contents[0][i], test_dict[int(clas[i])]))
                 count += 1
