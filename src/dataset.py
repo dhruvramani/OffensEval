@@ -56,6 +56,7 @@ class OffenseEval(Dataset):
     def map_index(self, contentstr):
         SUBA, SUBB, SUBC= ['NULL', 'NOT', 'OFF'], ['NULL', 'TIN', 'UNT'], ['NULL', 'IND', 'GRP', 'OTH']
         contents = {}
+        contents['id'] = contentstr[0]
         contents['instance'] = contentstr[1]
         embed_string = re.sub(r"[^a-zA-Z0-9]+", ' ', contents["instance"])
         contents['embeddings'] = np.asarray([self.glove.get(word, self.glove['unk']) for word in  embed_string.split(" ")])
@@ -80,7 +81,7 @@ class OffenseEval(Dataset):
         contents = self.map_index(contents)
         if(self.train):
             return contents['embeddings'], contents['SUBA'] #, contents['SUBB'], contents['SUBC']
-        return contents["instance"], contents['embeddings']
+        return contents["id"], contents["instance"], contents['embeddings']
 
 if __name__ == '__main__':
     dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/train-v1/offenseval-training-v1.tsv')

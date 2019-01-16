@@ -134,7 +134,7 @@ def test():
     net.load_state_dict(torch.load('../save/success/1.ckpt'))
     
     dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/testset-taska.tsv', train=False)
-    dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True) #, collate_fn=collate_fn)
+    dataloader = DataLoader(dataset, batch_size=args.batch_size) #, collate_fn=collate_fn)
     dataloader = iter(dataloader)
     test_dict = ['NOT', 'OFF']
     count = 0
@@ -144,15 +144,16 @@ def test():
 
     for i in range(0, len(dataloader) - 1):
         contents = next(dataloader)
-        inputs = contents[1].type(torch.FloatTensor).to(device)
+        inputs = contents[2].type(torch.FloatTensor).to(device)
         y_preds = net(inputs)
         clas = torch.max(y_preds, 1)[0].type(torch.LongTensor) - 1
         clas = clas.tolist()
         with open("../save/test.tsv", "a+") as f:
             for i in range(len(clas)):
-                print(int(clas[i]), end=" ")
+                if(int(clas[i]) > 1):
+                    clas[i] = 1
                 print(test_dict[int(clas[i])])
-                f.write("{}\t{}\t{}\n".format(count, contents[0][i], test_dict[int(clas[i])]))
+                f.write("{}\t{}\t{}\n".format(contents[0][i], contents[1][i], test_dict[int(clas[i])]))
                 count += 1
 
 #for epoch in range(tsepoch, tsepoch + args.epochs):
