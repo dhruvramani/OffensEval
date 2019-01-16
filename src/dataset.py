@@ -1,3 +1,4 @@
+import re
 import bcolz
 import torch
 import pickle
@@ -38,11 +39,12 @@ def collate_fn(data):
 class OffenseEval(Dataset):
     """OffenseEval dataset."""
 
-    def __init__(self, path, glove_path=_GLOVE_PATH):
+    def __init__(self, path, glove_path=_GLOVE_PATH, train=True):
         self.path = path
         self.glove_path = glove_path
         self.leng = sum(1 for line in open(self.path)) 
         self.glove = self.load_glove()
+        self.train = train
 
     def load_glove(self):
         vectors = bcolz.open('{}/27B.50.dat'.format(self.glove_path))[:]
@@ -55,13 +57,16 @@ class OffenseEval(Dataset):
         SUBA, SUBB, SUBC= ['NULL', 'NOT', 'OFF'], ['NULL', 'TIN', 'UNT'], ['NULL', 'IND', 'GRP', 'OTH']
         contents = {}
         contents['instance'] = contentstr[1]
+        embed_string = re.sub(r"[^a-zA-Z0-9]+", ' ', contents["instance"])
+        contents['embeddings'] = np.asarray([self.glove.get(word, self.glove['unk']) for word in  embed_string.split(" ")])
+        concat = np.zeros((_MAX_LEN - contents["embeddings"].shape[0], _EMB_DIM))
+        contents["embeddings"] = np.concatenate((contents["embeddings"], concat))
+        if(self.train == False):
+            return contents
         contents['SUBA'] = SUBA.index(contentstr[2])
         contents['SUBB'] = SUBB.index(contentstr[3])
         contents['SUBC'] = SUBC.index(contentstr[4])
-        contents['embeddings'] = np.asarray([self.glove.get(word, self.glove['unk']) for word in  contents["instance"].split(" ")])
         # TODO:  concatenate end of line word embedding, then :
-        concat = np.zeros((_MAX_LEN - contents["embeddings"].shape[0], _EMB_DIM))
-        contents["embeddings"] = np.concatenate((contents["embeddings"], concat))
         return contents
 
     def __len__(self):
@@ -73,7 +78,9 @@ class OffenseEval(Dataset):
         line = linecache.getline(self.path, idx + 1)[:-1]
         contents = line.split("\t")
         contents = self.map_index(contents)
-        return contents['embeddings'], contents['SUBA'], contents['SUBB'], contents['SUBC']
+        if(self.train):
+            return contents['embeddings'], contents['SUBA'] #, contents['SUBB'], contents['SUBC']
+        return content["instance"], contents['embeddings']
 
 if __name__ == '__main__':
     dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/train-v1/offenseval-training-v1.tsv')

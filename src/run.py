@@ -73,37 +73,38 @@ def train_network(epoch):
     params = net.parameters()     
     optimizer = torch.optim.Adam(params, lr=args.lr) 
 
+    # Training for task A
     for i in range(tstep, le):
         contents = next(dataloader)
         inputs = contents[0].type(torch.FloatTensor).to(device)
-        target_a, target_b, target_c = [contents[i].type(torch.LongTensor).to(device) for i in range(1, len(contents), 1)]
-        targets = [target_a, target_b, target_c]
+        target_a = contents[1].type(torch.LongTensor).to(device) #, target_b, target_c = [contents[i].type(torch.LongTensor).to(device) for i in range(1, len(contents), 1)]
+        #targets = [target_a, target_b, target_c]
         
-        suban, subbn, subcn = target_a.detach().cpu().numpy(), target_b.detach().cpu().numpy(), target_c.detach().cpu().numpy()
-        mask1, mask2, mask3 = np.where(suban == 0), np.where(subbn == 0), np.where(subcn == 0)
+        suban = target_a.detach().cpu().numpy() #, subbn, subcn = target_a.detach().cpu().numpy(), target_b.detach().cpu().numpy(), target_c.detach().cpu().numpy()
+        mask1 = np.where(suban == 0) #, mask2, mask3 = np.where(suban == 0), np.where(subbn == 0), np.where(subcn == 0)
 
         optimizer.zero_grad()
         y_preds = net(inputs)
-        preds = [torch.max(y_pred, 1)[0].type(torch.LongTensor) for y_pred in y_preds]
+        #preds = [torch.max(y_pred, 1)[0].type(torch.LongTensor) for y_pred in y_preds]
         
-        l1o, l2o, l3o = criterion(y_preds[0], target_a), criterion(y_preds[1], target_b), criterion(y_preds[2], target_c)
-        l1, l2, l3 = l1o.detach().cpu().numpy(), l2o.detach().cpu().numpy(), l3o.detach().cpu().numpy()
-        l1[mask1], l2[mask2], l3[mask3] = 0, 0, 0
-        l1, l2, l3 = torch.Tensor(l1).to(device), torch.Tensor(l2).to(device), torch.Tensor(l3).to(device)
+        l1o = criterion(y_preds, target_a) #, l2o, l3o = criterion(y_preds[0], target_a), criterion(y_preds[1], target_b), criterion(y_preds[2], target_c)
+        l1 = l1o.detach().cpu().numpy() #, l2, l3 = l1o.detach().cpu().numpy(), l2o.detach().cpu().numpy(), l3o.detach().cpu().numpy()
+        l1[mask1] = 0 #, l2[mask2], l3[mask3] = 0, 0, 0
+        l1 = torch.Tensor(l1).to(device) #, l2, l3 = torch.Tensor(l1).to(device), torch.Tensor(l2).to(device), torch.Tensor(l3).to(device)
 
-        loss = torch.mean((l1 * l1o) / 2) + torch.mean((l2 * l2o) / 2) + torch.mean((l3 * l3o) / 2)
+        loss = torch.mean((l1 * l1o) / 2) #+ torch.mean((l2 * l2o) / 2) + torch.mean((l3 * l3o) / 2)
         tl = loss.item()
         loss.backward()
         optimizer.step()
 
-        acc1 = f1_score(target_a.detach().cpu().numpy(), preds[0].detach().cpu().numpy(), average='macro')
-        acc2 = f1_score(target_b.detach().cpu().numpy(), preds[1].detach().cpu().numpy(), average='macro')
-        acc3 = f1_score(target_c.detach().cpu().numpy(), preds[2].detach().cpu().numpy(), average='macro')
+        acc1 = f1_score(target_a.detach().cpu().numpy(), torch.max(y_preds, 1)[0].type(torch.LongTensor).detach().cpu().numpy(), average='macro')
+        #acc2 = f1_score(target_b.detach().cpu().numpy(), preds[1].detach().cpu().numpy(), average='macro')
+        #acc3 = f1_score(target_c.detach().cpu().numpy(), preds[2].detach().cpu().numpy(), average='macro')
         
         train_loss += tl
         accu1 += acc1 
-        accu2 += acc2 
-        accu3 += acc3
+        #accu2 += acc2 
+        #accu3 += acc3
 
         gc.collect()
         torch.cuda.empty_cache()
@@ -125,9 +126,28 @@ def train_network(epoch):
     print("Best Metrics : {}".format(best_acc))
 
 def test():
-    # TODO
-    pass
+    global net
+    net.load_state_dict(torch.load('../save/network.ckpt'))
+    
+    dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/testset-taska.tsv')
+    dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True) #, collate_fn=collate_fn)
+    dataloader = iter(dataloader)
+    test_dict = ['NOT', 'OFF']
+    count = 0
 
+    with open("../save/test.tsv", "w+") as f:
+        f.write("id\ttweet\tsubtask_a\n")
+
+    for i in range(0, len(dataloader)):
+        contents = next(dataloader)
+        inputs = contents[1]
+        y_preds = net(inputs)
+        clas = torch.max(y_preds, 1)[0].type(torch.LongTensor) - 1
+        clas = clas.tolist()
+        with open("../save/test.tsv", "a+") as f:
+            for i in range(len(clas)):
+                f.write("{}\t{}\t{}\n".format(count, contents[0][i], test_dict.index(int(clas[i]))))
+                count += 1
 
 for epoch in range(tsepoch, tsepoch + args.epochs):
     train_network(epoch)
