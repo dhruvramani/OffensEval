@@ -145,7 +145,7 @@ def test():
     for i in range(0, len(dataloader)):
         contents = next(dataloader)
         print(contents)
-        inputs = contents[1]
+        inputs = contents[1].type(torch.FloatTensor).to(device)
         y_preds = net(inputs)
         clas = torch.max(y_preds, 1)[0].type(torch.LongTensor) - 1
         clas = clas.tolist()
