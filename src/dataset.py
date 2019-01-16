@@ -77,9 +77,13 @@ class OffenseEval(Dataset):
 
 if __name__ == '__main__':
     dataset = OffenseEval(path='/home/nevronas/Projects/Personal-Projects/Dhruv/OffensEval/dataset/train-v1/offenseval-training-v1.tsv')
-    dataloader = DataLoader(dataset, batch_size=40, shuffle=True, collate_fn=collate_fn)
+    dataloader = DataLoader(dataset, batch_size=40, shuffle=True)#, collate_fn=collate_fn)
     dataloader = iter(dataloader)
     for i in range(0, len(dataloader)):
         embeddings, suba, subb, subc = next(dataloader)
-        print(suba, subb, subc)
+        suban, subbn, subcn = suba.detach().cpu().numpy(), subb.detach().cpu().numpy(), subc.detach().cpu().numpy()
+        mask1, mask2, mask3 = np.where(suban == -1), np.where(subbn == -1), np.where(subcn == -1)
+        loss = np.ones(suban.shape)
+        loss[mask1] = 0
+        print(loss)
         break
