@@ -60,6 +60,7 @@ else :
 
 def train_network(epoch):
     global tstep
+    global best_acc
     print('\n=> Epoch: {}'.format(epoch))
     net.train()
     
@@ -114,7 +115,7 @@ def train_network(epoch):
         with open("../save/logs/train_loss.log", "a+") as lfile:
             lfile.write("{}\n".format(tl))
 
-        progress_bar(i, len(dataloader), 'Loss: {}, F1s: {} - {} - {}'.format(tl, accu1, accu2, accu3))
+        progress_bar(i, len(dataloader), 'Loss: {}, F1s: {} - {} - {}'.format(tl, acc1, acc2, acc3))
 
     tstep = 0
     del dataloader
