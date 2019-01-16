@@ -85,5 +85,7 @@ if __name__ == '__main__':
         mask1, mask2, mask3 = np.where(suban == -1), np.where(subbn == -1), np.where(subcn == -1)
         loss = np.ones(suban.shape)
         loss[mask1] = 0
+        loss[mask2] = 0
+        loss[mask3] = 0
         print(loss)
         break
